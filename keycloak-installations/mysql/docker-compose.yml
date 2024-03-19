@@ -1,0 +1,40 @@
+version: '3.9'
+
+services:
+  mysql_db:
+    image: mysql:8.0.28-oracle
+    ports:
+      - 3306:3306
+    restart: unless-stopped
+    environment:
+      MYSQL_USER: keycloak_user
+      MYSQL_PASSWORD: ERaNGEnTeOIn
+      MYSQL_DATABASE: keycloak_database
+      MYSQL_ROOT_PASSWORD: eoWSpoSACHIP
+    volumes:
+      - kc-volume:/var/lib/mysql
+    networks:
+      - kc-network
+  keycloak_instance:
+    image: quay.io/keycloak/keycloak:24.0.1
+    restart: unless-stopped
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: password
+      KC_DB: mysql
+      KC_DB_URL: jdbc:mysql://mysql_db/keycloak_database
+      KC_DB_USERNAME: keycloak_user
+      KC_DB_PASSWORD: ERaNGEnTeOIn
+    ports:
+      - 8080:8080
+    depends_on:
+      - mysql_db
+    networks:
+      - kc-network
+    command:
+      - start-dev
+networks:
+  kc-network:
+
+volumes:
+  kc-volume:
